@@ -12,7 +12,7 @@ void writeToFile(const double* const u, const string s, const double dx,
                  const double xmin, const int N);
 void initialize(double* const u, const double dx, const double xmin,
                 const int N);
-void upwind(double* u0, double* u1, const double dx, const double V, double dt, 	    const int N);
+void ftcs(double* u0, double* u1, const double dx, const double V, double dt, 	    		  const int N);
 
 
 int main(){
@@ -44,7 +44,7 @@ int main(){
 	for(int i=1; i<=Na; i++){
 		for(int j=0; j<Nk; j++){
 
-			upwind(u0, u1, dx, V, dt, N);
+			ftcs(u0, u1, dx, V, dt, N);
 			swap(u0, u1);
 		}
 		strm.str("");
@@ -89,12 +89,14 @@ void writeToFile(const double* const u, const string s, const double dx,
 }
 
 
-void upwind(double* u0, double* u1, const double dx, const double V, double dt, 	    const int N){
+void ftcs(double* u0, double* u1, const double dx, const double V, double dt, 	    const int N){
+
+	double const C = V*dt/dx;
 
 	u1[0] = u0[0];
 
 	for(int i=1; i<N; i++)
-		u1[i] = - (V*dt)/dx * (u0[i] - u0[i-1]) + u0[i];
+		u1[i] = - C/2.0 * (u0[i+1] - u0[i-1]) + u0[i];
 }
 
 
