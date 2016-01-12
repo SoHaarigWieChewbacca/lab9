@@ -8,17 +8,15 @@
 using namespace std;
 
 
-void writeToFile(const double* const u, const string s, const double dx,
-                 const double xmin, const int N);
-void initialize(double* const u, const double dx, const double xmin,
-                const int N);
-void upwind(double* u0, double* u1, const double dx, const double V, double dt, 	    const int N);
+void writeToFile(const double* const u, const string s, const double dx, const double xmin, const int N);
+void initialize(double* const u, const double dx, const double xmin, const int N);
+void upwind(double* const u0, double* const u1, const double dx, const double V, double dt, const int N);
 
 
 int main(){
 
 	const double tEnd = 5.0;
-	const double V = 1.0;
+	const double V = 1.0;			// Velocity
 
 	const int N  = 256;
 	const double xmin = -10;
@@ -27,13 +25,11 @@ int main(){
 	const double dx = (xmax-xmin)/(N-1);
 	double dt = dx/V;
 	const int Na = 10;
-	const int Nk = int(tEnd/Na/dt);
+	const int Nk = int(tEnd/Na/dt); 	// Number of steps per subinterval
 
 	double* u0 = new double[N];
 	double* u1 = new double[N];
-	double* h;
-
- 
+	
 
 	stringstream strm;
 
@@ -60,9 +56,8 @@ int main(){
 
 
 
-void initialize(double* const u, const double dx, const double xmin,
-                const int N){
-
+void initialize(double* const u, const double dx, const double xmin, const int N){
+	
 	for(int i=0; i<N; i++){
 		double x = xmin + i*dx;
 
@@ -75,8 +70,7 @@ void initialize(double* const u, const double dx, const double xmin,
 }
 
 
-void writeToFile(const double* const u, const string s, const double dx,
-                 const double xmin, const int N){
+void writeToFile(const double* const u, const string s, const double dx, const double xmin, const int N){
 
 	ofstream out(s.c_str());
 
@@ -89,12 +83,13 @@ void writeToFile(const double* const u, const string s, const double dx,
 }
 
 
-void upwind(double* u0, double* u1, const double dx, const double V, double dt, 	    const int N){
+void upwind(double* const u0, double* const u1, const double dx, const double V, double dt, const int N){
 
 	u1[0] = u0[0];
+	double const C = V*dt/dx;
 
 	for(int i=1; i<N; i++)
-		u1[i] = - (V*dt)/dx * (u0[i] - u0[i-1]) + u0[i];
+		u1[i] = - C * (u0[i] - u0[i-1]) + u0[i];
 }
 
 
